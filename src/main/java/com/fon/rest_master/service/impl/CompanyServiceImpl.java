@@ -43,7 +43,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CompanyDto save(CompanyDto companyDto) {
+    public CompanyDto save(CompanyDto companyDto){
         Company company = companyConverter.toEntity(companyDto);
         company = companyRepository.save(company);
         return companyConverter.toDto(company);
@@ -80,7 +80,24 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Object getUnpaidInvoicesByCompany(String companyName) throws EntityNotFoundException {
-        return companyRepository.findUnpaidInvoicesByCompany(companyName);
+    public Object getUnpaidInvoicesByCompany(int pib) throws EntityNotFoundException {
+        Optional<Company> companyOpt = companyRepository.findById(pib);
+        if (companyOpt.isPresent()) {
+            return companyRepository.findUnpaidInvoicesByCompany(pib);
+        }
+        else{
+            throw new EntityNotFoundException("Company with pib = " + pib + " is not found");
+        }
+    }
+
+    @Override
+    public Object findInvoicesByCompanyPib(int pib) throws EntityNotFoundException {
+        Optional<Company> companyOpt = companyRepository.findById(pib);
+        if (companyOpt.isPresent()) {
+            return companyRepository.findInvoicesByCompanyPib(pib);
+        }
+        else{
+            throw new EntityNotFoundException("Company with pib = " + pib + " is not found");
+        }
     }
 }
