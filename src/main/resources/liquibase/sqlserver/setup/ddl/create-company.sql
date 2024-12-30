@@ -1,6 +1,6 @@
 create xml schema collection InvoicesSchema as
 '<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
- xmlns:xs="http://www.w3.org/2001/XMLSchema">
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="Invoices">
     <xs:complexType>
       <xs:sequence>
@@ -37,6 +37,45 @@ create xml schema collection InvoicesSchema as
                                 <xs:totalDigits value="18"/>
                                 <xs:fractionDigits value="2"/>
                                 <xs:minExclusive value="0"/>
+                              </xs:restriction>
+                            </xs:simpleType>
+                          </xs:element>
+                          <xs:element name="project_id">
+                          <xs:simpleType>
+                            <xs:restriction base="xs:long">
+                              <xs:minExclusive value="0"/>
+                            </xs:restriction>
+                          </xs:simpleType>
+                          </xs:element>
+                          <xs:element name="employee_id">
+                          <xs:simpleType>
+                            <xs:restriction base="xs:long">
+                              <xs:minExclusive value="0"/>
+                            </xs:restriction>
+                          </xs:simpleType>
+                          </xs:element>
+                          <xs:element name="month">
+                            <xs:simpleType>
+                              <xs:restriction base="xs:string">
+				<xs:enumeration value="JANUARY"/>
+				<xs:enumeration value="FEBRUARY"/>
+				<xs:enumeration value="MARCH"/>
+				<xs:enumeration value="APRIL"/>
+				<xs:enumeration value="MAY"/>
+				<xs:enumeration value="JUNE"/>
+				<xs:enumeration value="JULY"/>
+				<xs:enumeration value="AUGUST"/>
+				<xs:enumeration value="SEPTEMBER"/>
+				<xs:enumeration value="OCTOBER"/>
+				<xs:enumeration value="NOVEMBER"/>
+				<xs:enumeration value="DECEMBER"/>
+                              </xs:restriction>
+                            </xs:simpleType>
+                          </xs:element>
+                          <xs:element name="year">
+                            <xs:simpleType>
+                              <xs:restriction base="xs:int">
+                                <xs:minInclusive value="2021"/>
                               </xs:restriction>
                             </xs:simpleType>
                           </xs:element>
