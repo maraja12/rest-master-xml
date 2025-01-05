@@ -52,7 +52,7 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
     //find employees id, name and surname for certain company invoice
     @Query(value =
             "select c.name as company_name, " +
-            "string_agg(concat('id: ', e.id, ' ', e.name, ' ', e.surname), ', ') AS employees" +
+            "string_agg(concat('id: ', e.id, ' ', e.name, ' ', e.surname), ', ') AS employees " +
             "from company c " +
             "cross apply invoices.nodes('/Invoices/Invoice') as T1(InvoicesList) " +
             "cross apply InvoicesList.nodes('InvoiceItems/InvoiceItem') as T2(InvoiceItems) " +
@@ -61,4 +61,24 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
             "group by c.name;",
             nativeQuery = true)
     Object findEmployeesForCertainCompanyInvoice(@Param("pib") int pib, @Param("invoice_id") Long invoiceId);
+
+    //find role of employee on project for certain company invoice (invoice item)
+    @Query(value =
+            "select c.name as company_name, " +
+            "e.project_id as project_id, " +
+            "e.employee_id as employee_id, " +
+            "string_agg(e.role, ', ') AS employees " +
+            "from company c " +
+            "cross apply invoices.nodes('/Invoices/Invoice') as T1(InvoicesList) " +
+            "cross apply InvoicesList.nodes('InvoiceItems/InvoiceItem') as T2(InvoiceItems) " +
+            "inner join engagement e " +
+            "on InvoiceItems.value('project_id', 'INT') = e.project_id " +
+            "and InvoiceItems.value('employee_id', 'INT') = e.employee_id " +
+            "where pib = :pib " +
+            "and InvoicesList.value('@id', 'INT') = :invoice_id " +
+            "and InvoiceItems.value('@seq_num', 'INT') = :seq_num " +
+            "group by c.name, e.project_id, e.employee_id;",
+            nativeQuery = true)
+    Object findEmployeeRoleOnProjectForCompanyInvoiceItem(
+            @Param("pib") int pib, @Param("invoice_id") Long invoiceId, @Param("seq_num") int seqNum);
 }
