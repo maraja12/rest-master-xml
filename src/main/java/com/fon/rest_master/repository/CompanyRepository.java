@@ -28,11 +28,37 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
 
 //  sum all unpaid invoices for particular company and show company name, pib and email
     @Query(value = "SELECT name, pib, email, " +
-            "SUM(CAST(InvoiceDetails.value('(price_per_hour)[1]', 'DECIMAL(18,2)') AS DECIMAL(18,2))) AS total_price " +
+            "SUM(CAST(InvoiceDetails.value('price_per_hour', 'DECIMAL(18,2)') AS DECIMAL(18,2))) AS total_price " +
             "FROM Company " +
             "CROSS APPLY invoices.nodes('/Invoices/Invoice[status=\"UNPAID\"]/InvoiceItems/InvoiceItem') AS InvoiceDetails(InvoiceDetails) " +
             "WHERE pib = :pib " +
             "GROUP BY name, pib, email",
             nativeQuery = true)
     Object sumUnpaidInvoicesByCompany(@Param("pib") int pib);
+
+    //find name of projects for certain company invoice
+    @Query(value =
+            "select c.name as company_name, " +
+            "string_agg(p.name, ', ') as project_names " +
+            "from company c " +
+            "cross apply invoices.nodes('/Invoices/Invoice') as T1(InvoicesList) " +
+            "cross apply InvoicesList.nodes('InvoiceItems/InvoiceItem') as T2(InvoiceItems) " +
+            "inner join project p on InvoiceItems.value('project_id', 'INT') = p.id " +
+            "where pib = :pib and InvoicesList.value('@id', 'INT') = :invoice_id  " +
+            "group by c.name;",
+            nativeQuery = true)
+    Object findProjectsForCertainCompanyInvoice(@Param("pib") int pib, @Param("invoice_id") Long invoiceId);
+
+    //find employees id, name and surname for certain company invoice
+    @Query(value =
+            "select c.name as company_name, " +
+            "string_agg(concat('id: ', e.id, ' ', e.name, ' ', e.surname), ', ') AS employees" +
+            "from company c " +
+            "cross apply invoices.nodes('/Invoices/Invoice') as T1(InvoicesList) " +
+            "cross apply InvoicesList.nodes('InvoiceItems/InvoiceItem') as T2(InvoiceItems) " +
+            "inner join employee e on InvoiceItems.value('employee_id', 'INT') = e.id " +
+            "where pib = :pib and InvoicesList.value('@id', 'INT') = :invoice_id  " +
+            "group by c.name;",
+            nativeQuery = true)
+    Object findEmployeesForCertainCompanyInvoice(@Param("pib") int pib, @Param("invoice_id") Long invoiceId);
 }
