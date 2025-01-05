@@ -26,4 +26,13 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
             nativeQuery = true)
     Object findUnpaidInvoicesByCompany(@Param("pib") int pib);
 
+//  sum all unpaid invoices for particular company and show company name, pib and email
+    @Query(value = "SELECT name, pib, email, " +
+            "SUM(CAST(InvoiceDetails.value('(price_per_hour)[1]', 'DECIMAL(18,2)') AS DECIMAL(18,2))) AS total_price " +
+            "FROM Company " +
+            "CROSS APPLY invoices.nodes('/Invoices/Invoice[status=\"UNPAID\"]/InvoiceItems/InvoiceItem') AS InvoiceDetails(InvoiceDetails) " +
+            "WHERE pib = :pib " +
+            "GROUP BY name, pib, email",
+            nativeQuery = true)
+    Object sumUnpaidInvoicesByCompany(@Param("pib") int pib);
 }

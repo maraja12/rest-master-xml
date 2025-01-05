@@ -54,4 +54,9 @@ public class CompanyController {
         Object details = companyService.findInvoicesByCompanyPib(pib);
         return new ResponseEntity<>(details, HttpStatus.OK);
     }
+    @GetMapping("/sum-unpaid/pib/{company-pib}")
+    public ResponseEntity<Object> sumUnpaidInvoicesByCompany(@PathVariable("company-pib") int pib){
+        Object list = companyService.sumUnpaidInvoicesByCompanyPib(pib);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
 }

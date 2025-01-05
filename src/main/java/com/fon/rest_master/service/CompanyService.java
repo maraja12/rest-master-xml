@@ -14,4 +14,5 @@ public interface CompanyService {
     void delete(int id) throws EntityNotFoundException;
     Object getUnpaidInvoicesByCompany(int pib) throws EntityNotFoundException;
     Object findInvoicesByCompanyPib(int pib) throws EntityNotFoundException;
+    Object sumUnpaidInvoicesByCompanyPib(int pib) throws EntityNotFoundException;
 }
